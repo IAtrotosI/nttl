@@ -21,7 +21,7 @@ double sm(void);
 * @details - Функция setlocale(LC_ALL, "") устанавливает локаль по умолчанию системы, что обеспечивает правильное отображение русских символов.
 * @return Возвращает 0 если программа выполнена корректно, иначе 1.
 */
-int main()
+int main(void)
 {
     char* locale = setlocale(LC_ALL, "");
     double num = sm();
