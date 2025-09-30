@@ -17,7 +17,7 @@ double naiti_y(double a, double x);
 * @param x - Аргумент x.
 * @return Возвращает x при успешном вводе, завершает выполнение программы при ошибке.
 */
-double argument_x();
+double argument_x(void);
 
 
 /**
@@ -50,7 +50,7 @@ int main(void)
     return 0;
 }
 
-double argument_x()
+double argument_x(void)
 {
     double x;
     printf("Введите значение x: ");
