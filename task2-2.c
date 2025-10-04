@@ -31,16 +31,13 @@ double argument_x(void);
 int main(void) 
 {
     char* locale = setlocale(LC_ALL, "");
-    double a = 2.5;
-    double x;
-    double y;
-
+    const double a = 2.5;
+    
     printf("Программа вычисления функции y = f(x)\n");
     printf("Параметр a = %.1f\n", a);
-    x = argument_x();
 
-
-    y = naiti_y(a, x);
+    double x = argument_x();
+    double y = naiti_y(a, x);
 
     printf("\nРезультаты вычислений:\n");
     printf("a = %.1f\n", a);
@@ -52,18 +49,19 @@ int main(void)
 
 double argument_x(void)
 {
-    double x;
+    double x = 0;
     printf("Введите значение x: ");
-    if (scanf("%lf", &x) != 1) {
+    if (scanf("%lf", &x) != 1)
+    {
         printf("Ошибка ввода! Требуется вещественное число.\n");
         exit(1);
     }
     return x;
 }
 
-double naiti_y(double a, double x) 
+double naiti_y(const double a, double x) 
 {
-    double y;
+    double y = 0;
     if (x > 0.5)
     {
         y = sqrt(a * a * x - 1);
