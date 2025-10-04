@@ -10,7 +10,7 @@
 * @param y - Аргумент y.
 * @return Возвращает вычисленное значение y.
 */
-double naiti_y(double a, double x);
+double naiti_y(const double a, const double x);
 
 /**
 * @brief Функция считывания аргумента x с клавиатуры с проверкой ввода.
@@ -59,7 +59,7 @@ double argument_x(void)
     return x;
 }
 
-double naiti_y(const double a, double x) 
+double naiti_y(const double a, const double x) 
 {
     double y = 0;
     if (x > 0.5)
