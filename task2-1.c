@@ -12,83 +12,88 @@ typedef enum
 } SortOrder;
 
 /**
+* @brief Структура для хранения трех чисел.
+*/
+typedef struct {
+    double a;
+    double b;
+    double c;
+    int success; // Флаг успешного ввода
+} Numbers;
+
+/**
 * @brief Функция сортировки трех чисел методом пузырька.
 * @param a - Первое число.
 * @param b - Второе число.
 * @param c - Третье число.
 * @param order - Порядок сортировки (increase или descending).
-* @param temp - Кешированная переменная.
-* @details - Функция ничего не возвращает, т.к работает с переменными через указатели.
 */
 void sortNumbers(double* a, double* b, double* c, SortOrder order);
 
 /**
 * @brief Функция считывания выбора порядка сортировки с проверкой ввода.
-* @param choice - Порядок сортировки.
-* @return Возвращает выбранный порядок сортировки, 1 при успешном вводе, или 0 при ошибке.
+* @return Возвращает выбранный порядок сортировки, или 0 при ошибке.
 */
 SortOrder getSortOrder();
 
 /**
 * @brief Функция считывания трех чисел с клавиатуры с проверкой ввода.
-* @param a - Указатель на первое число.
-* @param b - Указатель на второе число.
-* @param c - Указатель на третье число.
-* @return Возвращает 1 при успешном вводе, 0 при ошибке.
+* @return Возвращает структуру Numbers с числами и флагом успеха.
 */
-int getValues(double* a, double* b, double* c);
+Numbers getValues();
 
 /**
 * @brief Точка входа в программу.
-* @param a - Первое число.
-* @param b - Второе число.
-* @param c - Третье число.
-* @param order - Порядок сортировки (increase или descending).
+* @param numbers - Структура для хранения трех введенных чисел и флага успешного ввода
 * @details - Функция setlocale(LC_ALL, "") устанавливает локаль по умолчанию системы, что обеспечивает правильное отображение русских символов.
 * @return Возвращает 0 если программа выполнена корректно, иначе 1.
 */
 int main(void) {
     char* locale = setlocale(LC_ALL, "");
-    double a, b, c;
 
-    // Считываем значения.
-    if (!getValues(&a, &b, &c)) {
-        return 1; // Завершаем программу при ошибке ввода.
+    Numbers numbers = getValues();
+    if (!numbers.success) {
+        return 1;
     }
-    // Считываем выбор порядка сортировки.
     SortOrder order = getSortOrder();
     if (order != increase && order != descending) {
         printf("Ошибка выбора порядка сортировки!\n");
         return 1;
     }
 
-    sortNumbers(&a, &b, &c, order); // Сортируем числа в выбранном порядке.
+    sortNumbers(&numbers.a, &numbers.b, &numbers.c, order);
 
     // Выводим результат в зависимости от выбора пользователя.
     if (order == increase) {
-        printf("Числа в порядке возрастания: %.2f, %.2f, %.2f\n", a, b, c);
+        printf("Числа в порядке возрастания: %.2f, %.2f, %.2f\n", numbers.a, numbers.b, numbers.c);
     }
     else {
-        printf("Числа в порядке убывания: %.2f, %.2f, %.2f\n", a, b, c);
+        printf("Числа в порядке убывания: %.2f, %.2f, %.2f\n", numbers.a, numbers.b, numbers.c);
     }
 
     return 0;
 }
 
-int getValues(double* a, double* b, double* c) {
+Numbers getValues() {
+    Numbers nums;
+    nums.success = 0;
+
     printf("Введите три числа a, b, c: ");
-    if (scanf("%lf %lf %lf", a, b, c) != 3) {
-        printf("Ошибка ввода! Требуется три вещественных числа.\n");
-        return 0; // Возвращаем 0 при ошибке.
+    if (scanf("%lf %lf %lf", &nums.a, &nums.b, &nums.c) == 3) {
+        nums.success = 1; // Успешный ввод
     }
-    return 1; // Возвращаем 1 при успехе.
+    else {
+        printf("Ошибка ввода! Требуется три вещественных числа.\n");
+    }
+
+    return nums;
 }
 
 SortOrder getSortOrder() {
     int choice;
     printf("Выберите порядок сортировки:\n");
-    printf("1 - по возрастанию\n");
-    printf("2 - по убыванию\n");
+    printf("%d - по возрастанию\n", increase);
+    printf("%d - по убыванию\n", descending);
     printf("Ваш выбор: ");
 
     if (scanf("%d", &choice) != 1) {
@@ -96,14 +101,12 @@ SortOrder getSortOrder() {
         return 0;
     }
 
-    if (choice == 1) {
-        return increase;
-    }
-    else if (choice == 2) {
-        return descending;
-    }
-    else {
-        printf("Неверный выбор! Допустимые значения: 1 или 2\n");
+    switch (choice)
+    {
+    case increase: return increase;
+    case descending: return descending;
+    default:
+        printf("Неверный выбор! Допустимые значения: %d или %d\n", increase, descending);
         return 0;
     }
 }
