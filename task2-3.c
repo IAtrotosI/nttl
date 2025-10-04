@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <locale.h>
 #include <math.h>
+#include <stdlib.h>
 
 /**
 * @brief Функция проверки корректности ввода числа x.
@@ -13,23 +14,11 @@ double proverka_x(void);
 /**
 * @brief Функция вычисления и сортировки значений функций.
 * @param x - Аргумент x.
-* @param sin_x - Аргуент содержащий значение вычисления sin(x).
-* @param cos_x - Аргуент содержащий значение вычисления cos(x).
 * @param ln_x - Аргуент содержащий значение вычисления ln(x).
-* @param has_sin - Аргумент подтверждающий/отрицающий существование sin_x.
-* @param has_cos - Аргумент подтверждающий/отрицающий существование cos_x.
 * @param has_ln - Аргумент подтверждающий/отрицающий существование ln_x.
 * @details - Вычисляет sin(x), cos(x), ln(x) и выводит их в порядке возрастания.
 */
-void vichislenie_i_sortirovka(double x);
-
-/**
-* @brief Функция для обмена значений двух переменных.
-* @param tеmp - Кеширование значения переменной.
-* @param a - Указатель на первую переменную.
-* @param b - Указатель на вторую переменную.
-*/
-void obmen(double* a, double* b);
+void vichislenie_i_sortirovka(const double x);
 
 /**
 * @brief Точка входа в программу.
@@ -51,7 +40,7 @@ int main(void)
 
 double proverka_x(void)
 {
-    double x;
+    double x = 0;
     printf("Введите значение x: ");
     if (scanf("%lf", &x) != 1)
     {
@@ -61,27 +50,15 @@ double proverka_x(void)
     return x;
 }
 
-void obmen(double* a, double* b)
-{
-    double temp = *a;
-    *a = *b;
-    *b = temp;
-}
-
-void vichislenie_i_sortirovka(double x)
+void vichislenie_i_sortirovka(const double x)
 {
     double ln_x = 0;
-    int has_sin = 1, has_cos = 1, has_ln = 1;
+    int has_ln = 1;
 
     printf("\nВведенное значение x = %.4f\n", x);
     printf("========================================\n");
 
-    // Вычисление значений функций
-    double sin_x = sin(x);
-    double cos_x = cos(x);
-
     // Проверка существования ln(x)
-    // По сути ln(x) единственная функция, которая может не сущетвовать.
     if (x > 0)
     {
         ln_x = log(x);
@@ -95,25 +72,67 @@ void vichislenie_i_sortirovka(double x)
     printf("\nЗначения в порядке возрастания:\n");
     printf("========================================\n");
 
-    // Сортировка и вывод в порядке возрастания,
-    if (has_sin && has_cos && has_ln)
+    // Сортировка и вывод в порядке возрастания
+    if (has_ln)
     {
-        // Все три функции существуют
-        if (sin_x > cos_x) obmen(&sin_x, &cos_x);
-        if (cos_x > ln_x) obmen(&cos_x, &ln_x);
-        if (sin_x > cos_x) obmen(&sin_x, &cos_x);
-
-        printf("1. %.4f\n", sin_x);
-        printf("2. %.4f\n", cos_x);
-        printf("3. %.4f\n", ln_x);
+        // Все три функции существуют - сортируем прямо в условиях
+        /* Как по мне с функцией обмена, которая была в прошлом коммите на много проще и быстрее, код короче и понятнее */
+        if (sin(x) <= cos(x) && sin(x) <= ln_x)
+        {
+            printf("1. sin(x) = %.4f\n", sin(x));
+            if (cos(x) <= ln_x)
+            {
+                printf("2. cos(x) = %.4f\n", cos(x));
+                printf("3. ln(x) = %.4f\n", ln_x);
+            }
+            else
+            {
+                printf("2. ln(x) = %.4f\n", ln_x);
+                printf("3. cos(x) = %.4f\n", cos(x));
+            }
+        }
+        else if (cos(x) <= sin(x) && cos(x) <= ln_x)
+        {
+            printf("1. cos(x) = %.4f\n", cos(x));
+            if (sin(x) <= ln_x)
+            {
+                printf("2. sin(x) = %.4f\n", sin(x));
+                printf("3. ln(x) = %.4f\n", ln_x);
+            }
+            else
+            {
+                printf("2. ln(x) = %.4f\n", ln_x);
+                printf("3. sin(x) = %.4f\n", sin(x));
+            }
+        }
+        else
+        {
+            printf("1. ln(x) = %.4f\n", ln_x);
+            if (sin(x) <= cos(x))
+            {
+                printf("2. sin(x) = %.4f\n", sin(x));
+                printf("3. cos(x) = %.4f\n", cos(x));
+            }
+            else
+            {
+                printf("2. cos(x) = %.4f\n", cos(x));
+                printf("3. sin(x) = %.4f\n", sin(x));
+            }
+        }
     }
-    else if (has_sin && has_cos && !has_ln)
+    else
     {
         // Только sin и cos
-        if (sin_x > cos_x) obmen(&sin_x, &cos_x);
-
-        printf("1. %.4f\n", sin_x);
-        printf("2. %.4f\n", cos_x);
+        if (sin(x) <= cos(x))
+        {
+            printf("1. sin(x) = %.4f\n", sin(x));
+            printf("2. cos(x) = %.4f\n", cos(x));
+        }
+        else
+        {
+            printf("1. cos(x) = %.4f\n", cos(x));
+            printf("2. sin(x) = %.4f\n", sin(x));
+        }
         printf("ln(x) не существует\n");
     }
 }
