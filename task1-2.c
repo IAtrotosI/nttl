@@ -6,14 +6,14 @@
 * @brief Функция перевода длины из сантиметров в дюймы.
 * @return Возвращает результат вычислений длины в дюймах.
 */
-double duim(double num);
+double conversion_to_inches(double num);
 
 /**
 * @brief Функция ввода данных. Считывание значений с клавиатуры.
 * @param sm - Входные данные. Длина в сантиметрах.
 * @return Возвращает введённую пользователем длину в сантиметрах.
 */
-double sm(void);
+double lengthInput(void);
 
 /**
 * @brief Точка входа в программу.
@@ -24,20 +24,20 @@ double sm(void);
 int main(void)
 {
     char* locale = setlocale(LC_ALL, "");
-    double num = sm();
-    printf("Длина в дюймах: %.1f\n", duim(num)); 
+    double num = lengthInput();
+    printf("Длина в дюймах: %.1f\n", conversion_to_inches(num));
     return 0;
 }
 
-double sm(void)
+double lengthInput(void)
 {
-    double sm;
+    double length = 0;
     printf("Введите длину в сантиметрах: ");
-    scanf("%lf", &sm);
-    return sm;
+    scanf("%lf", &length);
+    return length;
 }
 
-double duim(double num) 
+double conversion_to_inches(double num)
 {
     return (num / 2.5);
 }
