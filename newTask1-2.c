@@ -6,7 +6,7 @@
 * @brief Функция перевода длины из сантиметров в дюймы.
 * @return Возвращает результат вычислений длины в дюймах.
 */
-double conversion_to_inches(double num);
+double conversion_to_inches(const double num);
 
 /**
 * @brief Функция ввода данных. Считывание значений с клавиатуры.
@@ -25,7 +25,7 @@ int main(void)
 {
     char* locale = setlocale(LC_ALL, "");
     double num = lengthInput();
-    printf("Длина в дюймах: %.1f\n", conversion_to_inches(num));
+    printf("Длина в дюймах: %.2f\n", conversion_to_inches(num));
     return 0;
 }
 
@@ -39,5 +39,5 @@ double lengthInput(void)
 
 double conversion_to_inches(double num)
 {
-    return (num / 2.5);
+    return (num / 2.54);
 }
