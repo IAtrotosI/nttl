@@ -46,9 +46,6 @@ int main(void)
     double F = sila_tiagotenia();
     double r = naiti_rasstoyanie(m, F);
 
-    printf("\nРезультаты вычислений:\n");
-    printf("Масса каждого шара: %.3f т\n", m);
-    printf("Сила тяготения: %.2f*10^-5 Н\n", F);
     printf("Расстояние между шарами: %.4f м\n", r);
 
     return 0;
