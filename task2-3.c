@@ -68,57 +68,13 @@ void vichislenie_i_sortirovka(const double x)
         has_ln = 0;
         printf("Внимание: ln(x) не существует при x <= 0!\n");
     }
-
-    printf("\nЗначения в порядке возрастания:\n");
-    printf("========================================\n");
-
     // Сортировка и вывод в порядке возрастания
     if (has_ln)
     {
-        // Все три функции существуют - сортируем прямо в условиях
-        /* Как по мне с функцией обмена, которая была в прошлом коммите на много проще и быстрее, код короче и понятнее */
-        if (sin(x) <= cos(x) && sin(x) <= ln_x)
-        {
-            printf("1. sin(x) = %.4f\n", sin(x));
-            if (cos(x) <= ln_x)
-            {
-                printf("2. cos(x) = %.4f\n", cos(x));
-                printf("3. ln(x) = %.4f\n", ln_x);
-            }
-            else
-            {
-                printf("2. ln(x) = %.4f\n", ln_x);
-                printf("3. cos(x) = %.4f\n", cos(x));
-            }
-        }
-        else if (cos(x) <= sin(x) && cos(x) <= ln_x)
-        {
-            printf("1. cos(x) = %.4f\n", cos(x));
-            if (sin(x) <= ln_x)
-            {
-                printf("2. sin(x) = %.4f\n", sin(x));
-                printf("3. ln(x) = %.4f\n", ln_x);
-            }
-            else
-            {
-                printf("2. ln(x) = %.4f\n", ln_x);
-                printf("3. sin(x) = %.4f\n", sin(x));
-            }
-        }
-        else
-        {
-            printf("1. ln(x) = %.4f\n", ln_x);
-            if (sin(x) <= cos(x))
-            {
-                printf("2. sin(x) = %.4f\n", sin(x));
-                printf("3. cos(x) = %.4f\n", cos(x));
-            }
-            else
-            {
-                printf("2. cos(x) = %.4f\n", cos(x));
-                printf("3. sin(x) = %.4f\n", sin(x));
-            }
-        }
+       double minV = min(sin(x), min(cos(x), ln_x));
+       double maxV = max(sin(x), max(cos(x), ln_x));
+       double midV = sin(x) + cos(x) + ln_x - maxV - minV;
+       printf("\nЗначения в порядке возрастания: %.4f, %.4f, %.4f\n", minV, midV, maxV);
     }
     else
     {
