@@ -23,7 +23,7 @@ typedef enum
 * @param midv - Среднее из чисел.
 * @param maxv - Максимальное из чисел.
 */
-void sort_and_print_Numbers(const double a, const double b, const double c, SortOrder order);
+void sort_and_print_Numbers(const double a, const double b, const double c, const SortOrder order);
 
 /**
 * @brief Функция считывания трех чисел с клавиатуры с проверкой ввода.
@@ -66,7 +66,7 @@ int getValue(void)
 }
 
 
-void sort_and_print_Numbers(double a, double b, double c, int order)
+void sort_and_print_Numbers(const double a, const double b, const double c, const int order)
 {
     double minv = min(a, min(b, c));
     double maxv = max(a, max(b, c));
@@ -82,5 +82,6 @@ void sort_and_print_Numbers(double a, double b, double c, int order)
         break;
     default:
         printf("Неправильный выбор\n");
+        exit(1);
     }
 }
