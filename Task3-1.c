@@ -3,6 +3,7 @@
 #include <locale.h>
 #include <math.h>
 #include <stdlib.h>
+#include <float.h>
 
 /**
 * @brief Функция ввода числа с проверкой.
@@ -52,7 +53,7 @@ int main(void)
     double x = start;
     double y = 0;
 
-    for (x = start; x <= end + 1e-9; x += delta_x)
+    for (x = start; x <= end + DBL_EPSILON; x += delta_x)
     {
         y = vichislit_y(x);
 
@@ -88,7 +89,6 @@ double vichislit_y(const double x)
         return NAN;
     }
 
-    double ln_x = log(x);
-    double y = 3 * ln_x * ln_x + 6 * ln_x - 5;
+    double y = 3 * log(x) * log(x) + 6 * log(x) - 5;
     return y;
 }
