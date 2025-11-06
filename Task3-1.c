@@ -84,7 +84,7 @@ double getValue(void)
 
 double vichislit_y(const double x)
 {
-    if (x <= 0)
+    if (x <= DBL_EPSILON)
     {
         return NAN;
     }
