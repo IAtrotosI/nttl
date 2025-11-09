@@ -62,6 +62,9 @@ int countOddGreaterThanA(const int* arr, const size_t size, const int A);
  */
 void multiplyOddMultiplesOfThree(int* arr, const size_t size);
 
+/*
+* @brief Перечисление для выбора способа заполнения массива.
+ */
 enum { RANDOM = 1, MANUAL };
 
 int main(void)
