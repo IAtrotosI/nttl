@@ -64,9 +64,27 @@ void multiplyOddMultiplesOfThree(int* arr, const size_t size);
 
 /*
 * @brief Перечисление для выбора способа заполнения массива.
- */
-enum { RANDOM = 1, MANUAL };
+* @param RANDOM - Случайное заполнение массива.
+* @param MANUAL - Ручное заполнение массива.
+*/
+enum { RANDOM = 1, MANUAL = 2};
 
+/**
+ * @brief Точка входа в программу.
+ * @param locale - Указатель на строку с локализацией.
+ * @param size - Размер динамического массива.
+ * @param arr - Указатель на динамический массив целых чисел.
+ * @param choice - Выбор пользователя: 1 (RANDOM) или 2 (MANUAL).
+ * @param A - Заданное число для сравнения в пункте 2.
+ * @param product - Результат произведения четных элементов (пункт 1).
+ * @param count - Результат подсчета нечетных элементов (пункт 2).
+ * @return 0 - Программа выполнена корректно.
+ * @return 1 - Ошибка выделения памяти или неверный выбор.
+ */
+int main(void)
+{
+    // Тело функции...
+}
 int main(void)
 {
     char* locale = setlocale(LC_ALL, "");
