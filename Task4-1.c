@@ -81,10 +81,7 @@ enum { RANDOM = 1, MANUAL = 2};
  * @return 0 - Программа выполнена корректно.
  * @return 1 - Ошибка выделения памяти или неверный выбор.
  */
-int main(void)
-{
-    // Тело функции...
-}
+
 int main(void)
 {
     char* locale = setlocale(LC_ALL, "");
