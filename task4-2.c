@@ -39,6 +39,14 @@ void fillRandom(int* arr, const size_t size);
 void printArray(const int* arr, const size_t size);
 
 /**
+ * @brief Создает копию массива
+ * @param arr Указатель на исходный массив
+ * @param size Размер массива
+ * @return Указатель на копию массива
+ */
+int* copyArray(const int* arr, const size_t size);
+
+/**
  * @brief Заменяет последний отрицательный элемент на модуль первого элемента
  * @param arr Указатель на массив
  * @param size Размер массива
@@ -69,8 +77,8 @@ void formArrayM(const int* P, int* M, const size_t size);
 
 /**
  * @brief Перечисление для выбора способа заполнения массива
- * Определяет константы для выбора между случайным заполнением 
- * и ручным вводом данных пользователем
+* @param RANDOM - Случайное заполнение массива.
+* @param MANUAL - Ручное заполнение массива.
  */
 enum { RANDOM = 1, MANUAL = 2 };
 
@@ -114,35 +122,50 @@ int main(void)
     printf("\nИсходный массив:\n");
     printArray(arr, size);
 
-    replaceLastNegative(arr, size);
+    // Создаем копию массива для операций
+    int* arr_copy = copyArray(arr, size);
+    if (arr_copy == NULL)
+    {
+        printf("Ошибка создания копии массива!\n");
+        free(arr);
+        return 1;
+    }
+
+    replaceLastNegative(arr_copy, size);
     printf("\n1. Массив после замены последнего отрицательного элемента на модуль первого элемента:\n");
-    printArray(arr, size);
+    printArray(arr_copy, size);
 
-    size_t original_size = size;
-    removeSameDigitElements(arr, &size);
+    size_t copy_size = size;
+    size_t original_size = copy_size;
+    removeSameDigitElements(arr_copy, &copy_size);
     printf("\n2. Массив после удаления элементов с одинаковыми первой и второй цифрами:\n");
-    printf("Удалено элементов: %zu\n", original_size - size);
-    printArray(arr, size);
+    printf("Удалено элементов: %zu\n", original_size - copy_size);
+    printArray(arr_copy, copy_size);
 
-    if (size > 0) {
-        int* M = malloc(size * sizeof(int));
+    if (copy_size > 0) {
+        int* M = malloc(copy_size * sizeof(int));
         if (M == NULL)
         {
             printf("Ошибка выделения памяти!\n");
             free(arr);
+            free(arr_copy);
             return 1;
         }
 
-        formArrayM(arr, M, size);
+        formArrayM(arr_copy, M, copy_size);
         printf("\n3. Сформированный массив M:\n");
-        printArray(M, size);
+        printArray(M, copy_size);
         free(M);
     }
     else {
-        printf("\n3. Невозможно сформировать массив M - исходный массив пуст\n");
+        printf("\n3. Невозможно сформировать массив M - массив пуст после удаления\n");
     }
 
+    printf("\nИсходный массив (без изменений):\n");
+    printArray(arr, size);
+
     free(arr);
+    free(arr_copy);
     return 0;
 }
 
@@ -200,6 +223,22 @@ void printArray(const int* arr, const size_t size)
         if (i < size - 1) printf(", ");
     }
     printf("]\n");
+}
+
+int* copyArray(const int* arr, const size_t size)
+{
+    int* copy = malloc(size * sizeof(int));
+    if (copy == NULL)
+    {
+        return NULL;
+    }
+
+    for (size_t i = 0; i < size; i++)
+    {
+        copy[i] = arr[i];
+    }
+
+    return copy;
 }
 
 void replaceLastNegative(int* arr, const size_t size)
@@ -275,7 +314,7 @@ void formArrayM(const int* P, int* M, const size_t size)
     {
         if (P[i] % 2 == 0)
         {
-            M[i] = (int)(i + 1) * P[i]; 
+            M[i] = (int)(i + 1) * P[i];
         }
         else
         {
