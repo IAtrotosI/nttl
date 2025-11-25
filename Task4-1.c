@@ -39,10 +39,18 @@ void fillRandom(int* arr, const size_t size);
 void printArray(const int* arr, const size_t size);
 
 /**
+ * @brief Создает копию массива
+ * @param arr Указатель на исходный массив
+ * @param size Размер массива
+ * @return Указатель на копию массива
+ */
+int* copyArray(const int* arr, const size_t size);
+
+/**
  * @brief Находит произведение четных элементов, значения которых по модулю меньше 5
  * @param arr Указатель на массив
  * @param size Размер массива
- * @return Произведение подходящих элементов или 1 если нет подходящих элементов
+ * @return Произведение подходящих элементов или 0 если нет подходящих элементов
  */
 int LessThanFive(const int* arr, const size_t size);
 
@@ -67,13 +75,14 @@ void multiplyOddMultiplesOfThree(int* arr, const size_t size);
 * @param RANDOM - Случайное заполнение массива.
 * @param MANUAL - Ручное заполнение массива.
 */
-enum { RANDOM = 1, MANUAL = 2};
+enum { RANDOM = 1, MANUAL = 2 };
 
 /**
  * @brief Точка входа в программу.
  * @param locale - Указатель на строку с локализацией.
  * @param size - Размер динамического массива.
  * @param arr - Указатель на динамический массив целых чисел.
+ * @param arr_copy - Указатель на копию массива.
  * @param choice - Выбор пользователя: 1 (RANDOM) или 2 (MANUAL).
  * @param A - Заданное число для сравнения в пункте 2.
  * @param product - Результат произведения четных элементов (пункт 1).
@@ -114,22 +123,31 @@ int main(void)
     printf("\nИсходный массив:\n");
     printArray(arr, size);
 
-    // Пункт 1
-    int product = LessThanFive(arr, size);
+    int* arr_copy = copyArray(arr, size);
+    if (arr_copy == NULL)
+    {
+        printf("Ошибка создания копии массива!\n");
+        free(arr);
+        return 1;
+    }
+
+    int product = LessThanFive(arr_copy, size);
     printf("\n1. Произведение четных элементов, по модулю меньше 5: %d\n", product);
 
-    // Пункт 2
     printf("Введите число A для сравнения: ");
     int A = getIntValue();
-    int count = countOddGreaterThanA(arr, size, A);
+    int count = countOddGreaterThanA(arr_copy, size, A);
     printf("2. Количество нечетных элементов, превосходящих по модулю %d: %d\n", A, count);
 
-    // Пункт 3
-    multiplyOddMultiplesOfThree(arr, size);
+    multiplyOddMultiplesOfThree(arr_copy, size);
     printf("3. Массив после умножения нечетных элементов, кратных 3, на их номер:\n");
+    printArray(arr_copy, size);
+
+    printf("\nИсходный массив (без изменений):\n");
     printArray(arr, size);
 
     free(arr);
+    free(arr_copy);
     return 0;
 }
 
@@ -185,6 +203,22 @@ void printArray(const int* arr, const size_t size)
         printf("%d ", arr[i]);
     }
     printf("\n");
+}
+
+int* copyArray(const int* arr, const size_t size)
+{
+    int* copy = malloc(size * sizeof(int));
+    if (copy == NULL)
+    {
+        return NULL;
+    }
+
+    for (size_t i = 0; i < size; i++)
+    {
+        copy[i] = arr[i];
+    }
+
+    return copy;
 }
 
 int LessThanFive(const int* arr, const size_t size)
