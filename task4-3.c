@@ -14,7 +14,6 @@ int getIntValue();
  * @param rows Указатель на количество строк
  * @param cols Указатель на количество столбцов
 **/
-
 void getMatrixSize(size_t* rows, size_t* cols);
 
 /**
@@ -24,6 +23,15 @@ void getMatrixSize(size_t* rows, size_t* cols);
  * @return Указатель на матрицу
  */
 int** allocateMatrix(size_t rows, size_t cols);
+
+/**
+ * @brief Создает копию матрицы
+ * @param matrix Исходная матрица
+ * @param rows Количество строк
+ * @param cols Количество столбцов
+ * @return Указатель на копию матрицы
+ */
+int** copyMatrix(int** matrix, size_t rows, size_t cols);
 
 /**
  * @brief Освобождение памяти матрицы
@@ -83,10 +91,10 @@ void removeRows(int** matrix, size_t* rows, size_t cols);
 
 /**
  * @brief Перечисление для выбора способа заполнения матрицы
- * Определяет константы для выбора между случайным заполнением 
+ * Определяет константы для выбора между случайным заполнением
  * и ручным вводом данных с клавиатуры
  */
-enum { RANDOM = 1, MANUAL = 2};
+enum { RANDOM = 1, MANUAL = 2 };
 
 /**
  * @brief Главная функция программы
@@ -128,17 +136,35 @@ int main(void)
     printf("\nИсходная матрица:\n");
     printMatrix(matrix, rows, cols);
 
-    replaceMultiplesOfThree(matrix, rows, cols);
+    // Создаем копию матрицы для операций
+    int** matrix_copy = copyMatrix(matrix, rows, cols);
+    if (matrix_copy == NULL)
+    {
+        printf("Ошибка создания копии матрицы!\n");
+        freeMatrix(matrix, rows);
+        return 1;
+    }
+
+    // Пункт 1 - работаем с копией
+    replaceMultiplesOfThree(matrix_copy, rows, cols);
     printf("\n1. Матрица после замены элементов кратных трем каждого столбца нулем:\n");
-    printMatrix(matrix, rows, cols);
+    printMatrix(matrix_copy, rows, cols);
 
-    size_t original_rows = rows;
-    removeRows(matrix, &rows, cols);
+    // Пункт 2 - работаем с копией
+    size_t copy_rows = rows;
+    size_t original_rows = copy_rows;
+    removeRows(matrix_copy, &copy_rows, cols);
     printf("\n2. Матрица после удаления строк, где второй элемент больше предпоследнего:\n");
-    printf("Удалено строк: %zu\n", original_rows - rows);
+    printf("Удалено строк: %zu\n", original_rows - copy_rows);
+    printMatrix(matrix_copy, copy_rows, cols);
+
+    // Выводим исходную матрицу для сравнения
+    printf("\nИсходная матрица (без изменений):\n");
     printMatrix(matrix, rows, cols);
 
+    // Освобождаем память
     freeMatrix(matrix, rows);
+    freeMatrix(matrix_copy, copy_rows);
     return 0;
 }
 
@@ -194,6 +220,21 @@ int** allocateMatrix(size_t rows, size_t cols)
         }
     }
     return matrix;
+}
+
+int** copyMatrix(int** matrix, size_t rows, size_t cols)
+{
+    int** copy = allocateMatrix(rows, cols);
+    if (copy == NULL) return NULL;
+
+    for (size_t i = 0; i < rows; i++)
+    {
+        for (size_t j = 0; j < cols; j++)
+        {
+            copy[i][j] = matrix[i][j];
+        }
+    }
+    return copy;
 }
 
 void freeMatrix(int** matrix, size_t rows)
