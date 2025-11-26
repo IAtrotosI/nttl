@@ -8,7 +8,7 @@
  * @brief Ввод целого числа с проверкой
  * @return Введенное целое число
  */
-int getIntValue();
+int getIntValue(void);
 
 /**
  * @brief Получение размера массива
