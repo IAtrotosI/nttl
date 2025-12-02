@@ -8,7 +8,7 @@
  * @brief Ввод целого числа с проверкой
  * @return Введенное целое число
  */
-int getIntValue();
+int getIntValue(void);
 
 /**
  * @brief Получение размера массива
@@ -25,11 +25,13 @@ size_t getSize(char* message);
 void fillManual(int* arr, const size_t size);
 
 /**
- * @brief Заполнение массива случайными числами в диапазоне [10;20]
+ * @brief Заполнение массива случайными числами в диапазоне [min;max]
  * @param arr Указатель на массив
  * @param size Размер массива
+ * @param min Минимальное значение
+ * @param max Максимальное значение
  */
-void fillRandom(int* arr, const size_t size);
+void fillRandom(int* arr, const size_t size, const int min, const int max);
 
 /**
  * @brief Вывод массива на экран
@@ -44,7 +46,14 @@ void printArray(const int* arr, const size_t size);
  * @param size Размер массива
  * @return Указатель на копию массива
  */
-int* copyArray(const int* arr, const size_t size);
+int* createCopyArray(const int* arr, const size_t size);
+
+/**
+ * @brief Создает новый массив заданного размера
+ * @param size Размер массива
+ * @return Указатель на созданный массив
+ */
+int* createArray(const size_t size);
 
 /**
  * @brief Заменяет последний отрицательный элемент на модуль первого элемента
@@ -58,14 +67,15 @@ void replaceLastNegative(int* arr, const size_t size);
  * @param num Число для проверки
  * @return 1 если цифры одинаковые, 0 если нет
  */
-int hasSameDigits(int num);
+int hasSameDigits(const int num);
 
 /**
  * @brief Удаляет элементы с одинаковыми первой и второй цифрами
  * @param arr Указатель на массив
- * @param size Указатель на размер массива (изменяется при удалении)
+ * @param size Размер массива
+ * @return Новый размер массива после удаления элементов
  */
-void removeSameDigitElements(int* arr, size_t* size);
+size_t removeSameDigitElements(int* arr, const size_t size);
 
 /**
  * @brief Формирует массив M по правилу: для четных M_i = i*P_i, для нечетных M_i = -P_i
@@ -93,13 +103,21 @@ enum { RANDOM = 1, MANUAL = 2 };
 int main(void)
 {
     char* locale = setlocale(LC_ALL, "");
-    size_t size = getSize("Введите размер массива: ");
-    int* arr = malloc(size * sizeof(int));
-    if (arr == NULL)
+
+    int min_value = 0, max_value = 0;
+    printf("Введите минимальное значение для случайных чисел: ");
+    min_value = getIntValue();
+    printf("Введите максимальное значение для случайных чисел: ");
+    max_value = getIntValue();
+
+    if (min_value > max_value)
     {
-        printf("Ошибка выделения памяти!\n");
+        printf("Минимальное значение не может быть больше максимального!\n");
         return 1;
     }
+
+    size_t size = getSize("Введите размер массива: ");
+    int* arr = createArray(size);
 
     printf("Выберите способ заполнения массива:\n"
         "%d - случайными числами, %d - вручную: ", RANDOM, MANUAL);
@@ -108,7 +126,7 @@ int main(void)
     switch (choice)
     {
     case RANDOM:
-        fillRandom(arr, size);
+        fillRandom(arr, size, min_value, max_value);
         break;
     case MANUAL:
         fillManual(arr, size);
@@ -122,39 +140,22 @@ int main(void)
     printf("\nИсходный массив:\n");
     printArray(arr, size);
 
-    // Создаем копию массива для операций
-    int* arr_copy = copyArray(arr, size);
-    if (arr_copy == NULL)
-    {
-        printf("Ошибка создания копии массива!\n");
-        free(arr);
-        return 1;
-    }
+    int* arr_copy = createCopyArray(arr, size);
 
     replaceLastNegative(arr_copy, size);
     printf("\n1. Массив после замены последнего отрицательного элемента на модуль первого элемента:\n");
     printArray(arr_copy, size);
 
-    size_t copy_size = size;
-    size_t original_size = copy_size;
-    removeSameDigitElements(arr_copy, &copy_size);
+    size_t new_size = removeSameDigitElements(arr_copy, size);
     printf("\n2. Массив после удаления элементов с одинаковыми первой и второй цифрами:\n");
-    printf("Удалено элементов: %zu\n", original_size - copy_size);
-    printArray(arr_copy, copy_size);
+    printf("Удалено элементов: %zu\n", size - new_size);
+    printArray(arr_copy, new_size);
 
-    if (copy_size > 0) {
-        int* M = malloc(copy_size * sizeof(int));
-        if (M == NULL)
-        {
-            printf("Ошибка выделения памяти!\n");
-            free(arr);
-            free(arr_copy);
-            return 1;
-        }
-
-        formArrayM(arr_copy, M, copy_size);
+    if (new_size > 0) {
+        int* M = createArray(new_size);
+        formArrayM(arr_copy, M, new_size);
         printf("\n3. Сформированный массив M:\n");
-        printArray(M, copy_size);
+        printArray(M, new_size);
         free(M);
     }
     else {
@@ -202,15 +203,12 @@ void fillManual(int* arr, const size_t size)
     }
 }
 
-void fillRandom(int* arr, const size_t size)
+void fillRandom(int* arr, const size_t size, const int min, const int max)
 {
-    const int MIN = 10;
-    const int MAX = 20;
-
-    printf("Заполнение массива случайными числами в диапазоне [%d;%d]\n", MIN, MAX);
+    printf("Заполнение массива случайными числами в диапазоне [%d;%d]\n", min, max);
     for (size_t i = 0; i < size; i++)
     {
-        arr[i] = rand() % (MAX - MIN + 1) + MIN;
+        arr[i] = rand() % (max - min + 1) + min;
     }
 }
 
@@ -225,20 +223,25 @@ void printArray(const int* arr, const size_t size)
     printf("]\n");
 }
 
-int* copyArray(const int* arr, const size_t size)
+int* createCopyArray(const int* arr, const size_t size)
 {
-    int* copy = malloc(size * sizeof(int));
-    if (copy == NULL)
-    {
-        return NULL;
-    }
-
+    int* copy = createArray(size);
     for (size_t i = 0; i < size; i++)
     {
         copy[i] = arr[i];
     }
-
     return copy;
+}
+
+int* createArray(const size_t size)
+{
+    int* arr = malloc(size * sizeof(int));
+    if (arr == NULL)
+    {
+        printf("Ошибка выделения памяти!\n");
+        exit(1);
+    }
+    return arr;
 }
 
 void replaceLastNegative(int* arr, const size_t size)
@@ -248,7 +251,7 @@ void replaceLastNegative(int* arr, const size_t size)
     int firstElementAbs = abs(arr[0]);
     int lastNegativeIndex = -1;
 
-    for (int i = size - 1; i >= 0; i--)
+    for (int i = (int)size - 1; i >= 0; i--)
     {
         if (arr[i] < 0)
         {
@@ -269,43 +272,37 @@ void replaceLastNegative(int* arr, const size_t size)
     }
 }
 
-int hasSameDigits(int num)
+int hasSameDigits(const int num)
 {
-    num = abs(num);
+    int absolute_num = abs(num);
 
-    if (num < 10) return 0;
+    if (absolute_num < 10) return 0;
 
-    int firstDigit = num;
+    int firstDigit = absolute_num;
     while (firstDigit >= 10)
     {
         firstDigit /= 10;
     }
 
-    int lastDigit = num % 10;
+    int lastDigit = absolute_num % 10;
 
     return firstDigit == lastDigit;
 }
 
-void removeSameDigitElements(int* arr, size_t* size)
+size_t removeSameDigitElements(int* arr, const size_t size)
 {
     size_t newSize = 0;
-    size_t removedCount = 0;
 
-    for (size_t i = 0; i < *size; i++)
+    for (size_t i = 0; i < size; i++)
     {
-        if (hasSameDigits(arr[i]))
-        {
-            printf("Удален элемент [%zu] = %d (одинаковые цифры)\n", i, arr[i]);
-            removedCount++;
-        }
-        else
+        if (!hasSameDigits(arr[i]))
         {
             arr[newSize] = arr[i];
             newSize++;
         }
     }
 
-    *size = newSize;
+    return newSize;
 }
 
 void formArrayM(const int* P, int* M, const size_t size)
