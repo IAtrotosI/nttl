@@ -7,22 +7,22 @@
  * @brief Ввод целого числа с проверкой
  * @return Введенное целое число
  */
-int getIntValue();
+int getIntValue(void);
 
 /**
- * @brief Получение размеров матрицы
- * @param rows Указатель на количество строк
- * @param cols Указатель на количество столбцов
-**/
-void getMatrixSize(size_t* rows, size_t* cols);
+ * @brief Получение размера (количества строк или столбцов)
+ * @param message Сообщение для пользователя
+ * @return Размер (положительное число)
+ */
+size_t getSize(const char* message);
 
 /**
- * @brief Выделение памяти для матрицы
+ * @brief Создание матрицы с заданными размерами
  * @param rows Количество строк
  * @param cols Количество столбцов
- * @return Указатель на матрицу
+ * @return Указатель на созданную матрицу
  */
-int** allocateMatrix(size_t rows, size_t cols);
+int** createMatrix(const size_t rows, const size_t cols);
 
 /**
  * @brief Создает копию матрицы
@@ -31,14 +31,14 @@ int** allocateMatrix(size_t rows, size_t cols);
  * @param cols Количество столбцов
  * @return Указатель на копию матрицы
  */
-int** copyMatrix(int** matrix, size_t rows, size_t cols);
+int** createMatrixCopy(const int* const* matrix, const size_t rows, const size_t cols);
 
 /**
  * @brief Освобождение памяти матрицы
  * @param matrix Указатель на матрицу
  * @param rows Количество строк
  */
-void freeMatrix(int** matrix, size_t rows);
+void freeMatrix(int** matrix, const size_t rows);
 
 /**
  * @brief Заполнение матрицы вручную с клавиатуры
@@ -46,15 +46,17 @@ void freeMatrix(int** matrix, size_t rows);
  * @param rows Количество строк
  * @param cols Количество столбцов
  */
-void fillManual(int** matrix, size_t rows, size_t cols);
+void fillManual(int** matrix, const size_t rows, const size_t cols);
 
 /**
  * @brief Заполнение матрицы случайными числами
  * @param matrix Указатель на матрицу
  * @param rows Количество строк
  * @param cols Количество столбцов
+ * @param min Минимальное значение
+ * @param max Максимальное значение
  */
-void fillRandom(int** matrix, size_t rows, size_t cols);
+void fillRandom(int** matrix, const size_t rows, const size_t cols, const int min, const int max);
 
 /**
  * @brief Вывод матрицы на экран
@@ -62,7 +64,7 @@ void fillRandom(int** matrix, size_t rows, size_t cols);
  * @param rows Количество строк
  * @param cols Количество столбцов
  */
-void printMatrix(int** matrix, size_t rows, size_t cols);
+void printMatrix(const int* const* matrix, const size_t rows, const size_t cols);
 
 /**
  * @brief Заменяет элемент кратный трем каждого столбца нулем
@@ -70,7 +72,7 @@ void printMatrix(int** matrix, size_t rows, size_t cols);
  * @param rows Количество строк
  * @param cols Количество столбцов
  */
-void replaceMultiplesOfThree(int** matrix, size_t rows, size_t cols);
+void replaceMultiplesOfThree(int** matrix, const size_t rows, const size_t cols);
 
 /**
  * @brief Проверяет, нужно ли удалять строку (второй элемент > предпоследнего)
@@ -79,20 +81,21 @@ void replaceMultiplesOfThree(int** matrix, size_t rows, size_t cols);
  * @param cols Количество столбцов
  * @return 1 если нужно удалить, 0 если нет
  */
-int shouldRemoveRow(int** matrix, size_t rowIndex, size_t cols);
+int shouldRemoveRow(const int* const* matrix, const size_t rowIndex, const size_t cols);
 
 /**
  * @brief Удаляет строки, в которых второй элемент больше предпоследнего
  * @param matrix Указатель на матрицу
- * @param rows Указатель на количество строк
+ * @param rows Количество строк
  * @param cols Количество столбцов
+ * @return Новое количество строк после удаления
  */
-void removeRows(int** matrix, size_t* rows, size_t cols);
+size_t removeRows(int** matrix, const size_t rows, const size_t cols);
 
 /**
  * @brief Перечисление для выбора способа заполнения матрицы
- * Определяет константы для выбора между случайным заполнением
- * и ручным вводом данных с клавиатуры
+ * Определяет константы для выбора между случайным заполнением (RANDOM)
+ * и ручным вводом данных с клавиатуры(MANUAL)
  */
 enum { RANDOM = 1, MANUAL = 2 };
 
@@ -105,15 +108,23 @@ enum { RANDOM = 1, MANUAL = 2 };
 int main(void)
 {
     char* locale = setlocale(LC_ALL, "");
-    size_t rows, cols;
-    getMatrixSize(&rows, &cols);
 
-    int** matrix = allocateMatrix(rows, cols);
-    if (matrix == NULL)
+    int min_value, max_value;
+    printf("Введите минимальное значение для случайных чисел: ");
+    min_value = getIntValue();
+    printf("Введите максимальное значение для случайных чисел: ");
+    max_value = getIntValue();
+
+    if (min_value > max_value)
     {
-        printf("Ошибка выделения памяти!\n");
+        printf("Минимальное значение не может быть больше максимального!\n");
         return 1;
     }
+
+    size_t rows = getSize("Введите количество строк: ");
+    size_t cols = getSize("Введите количество столбцов: ");
+
+    int** matrix = createMatrix(rows, cols);
 
     printf("Выберите способ заполнения матрицы:\n"
         "%d - случайными числами, %d - вручную: ", RANDOM, MANUAL);
@@ -122,7 +133,7 @@ int main(void)
     switch (choice)
     {
     case RANDOM:
-        fillRandom(matrix, rows, cols);
+        fillRandom(matrix, rows, cols, min_value, max_value);
         break;
     case MANUAL:
         fillManual(matrix, rows, cols);
@@ -137,13 +148,7 @@ int main(void)
     printMatrix(matrix, rows, cols);
 
     // Создаем копию матрицы для операций
-    int** matrix_copy = copyMatrix(matrix, rows, cols);
-    if (matrix_copy == NULL)
-    {
-        printf("Ошибка создания копии матрицы!\n");
-        freeMatrix(matrix, rows);
-        return 1;
-    }
+    int** matrix_copy = createMatrixCopy(matrix, rows, cols);
 
     // Пункт 1 - работаем с копией
     replaceMultiplesOfThree(matrix_copy, rows, cols);
@@ -151,12 +156,10 @@ int main(void)
     printMatrix(matrix_copy, rows, cols);
 
     // Пункт 2 - работаем с копией
-    size_t copy_rows = rows;
-    size_t original_rows = copy_rows;
-    removeRows(matrix_copy, &copy_rows, cols);
+    size_t new_rows = removeRows(matrix_copy, rows, cols);
     printf("\n2. Матрица после удаления строк, где второй элемент больше предпоследнего:\n");
-    printf("Удалено строк: %zu\n", original_rows - copy_rows);
-    printMatrix(matrix_copy, copy_rows, cols);
+    printf("Удалено строк: %zu\n", rows - new_rows);
+    printMatrix(matrix_copy, new_rows, cols);
 
     // Выводим исходную матрицу для сравнения
     printf("\nИсходная матрица (без изменений):\n");
@@ -164,7 +167,7 @@ int main(void)
 
     // Освобождаем память
     freeMatrix(matrix, rows);
-    freeMatrix(matrix_copy, copy_rows);
+    freeMatrix(matrix_copy, new_rows);
     return 0;
 }
 
@@ -179,53 +182,47 @@ int getIntValue(void)
     return value;
 }
 
-void getMatrixSize(size_t* rows, size_t* cols)
+size_t getSize(const char* message)
 {
-    printf("Введите количество строк: ");
-    int r = getIntValue();
-    if (r <= 0)
+    printf("%s", message);
+    int value = getIntValue();
+    if (value <= 0)
     {
-        printf("Ошибка! Количество строк должно быть положительным числом.\n");
+        printf("Ошибка! Размер должен быть положительным числом.\n");
         exit(1);
     }
-
-    printf("Введите количество столбцов: ");
-    int c = getIntValue();
-    if (c <= 0)
-    {
-        printf("Ошибка! Количество столбцов должно быть положительным числом.\n");
-        exit(1);
-    }
-
-    *rows = (size_t)r;
-    *cols = (size_t)c;
+    return (size_t)value;
 }
 
-int** allocateMatrix(size_t rows, size_t cols)
+int** createMatrix(const size_t rows, const size_t cols)
 {
     int** matrix = (int**)malloc(rows * sizeof(int*));
-    if (matrix == NULL) return NULL;
+    if (matrix == NULL)
+    {
+        printf("Ошибка выделения памяти для строк!\n");
+        exit(1);
+    }
 
     for (size_t i = 0; i < rows; i++)
     {
         matrix[i] = (int*)malloc(cols * sizeof(int));
         if (matrix[i] == NULL)
         {
+            printf("Ошибка выделения памяти для строки %zu!\n", i);
             for (size_t j = 0; j < i; j++)
             {
                 free(matrix[j]);
             }
             free(matrix);
-            return NULL;
+            exit(1);
         }
     }
     return matrix;
 }
 
-int** copyMatrix(int** matrix, size_t rows, size_t cols)
+int** createMatrixCopy(const int* const* matrix, const size_t rows, const size_t cols)
 {
-    int** copy = allocateMatrix(rows, cols);
-    if (copy == NULL) return NULL;
+    int** copy = createMatrix(rows, cols);
 
     for (size_t i = 0; i < rows; i++)
     {
@@ -237,7 +234,7 @@ int** copyMatrix(int** matrix, size_t rows, size_t cols)
     return copy;
 }
 
-void freeMatrix(int** matrix, size_t rows)
+void freeMatrix(int** matrix, const size_t rows)
 {
     for (size_t i = 0; i < rows; i++)
     {
@@ -246,7 +243,7 @@ void freeMatrix(int** matrix, size_t rows)
     free(matrix);
 }
 
-void fillManual(int** matrix, size_t rows, size_t cols)
+void fillManual(int** matrix, const size_t rows, const size_t cols)
 {
     printf("Введите элементы матрицы %zux%zu:\n", rows, cols);
     for (size_t i = 0; i < rows; i++)
@@ -259,22 +256,19 @@ void fillManual(int** matrix, size_t rows, size_t cols)
     }
 }
 
-void fillRandom(int** matrix, size_t rows, size_t cols)
+void fillRandom(int** matrix, const size_t rows, const size_t cols, const int min, const int max)
 {
-    const int MIN = -50;
-    const int MAX = 50;
-
-    printf("Заполнение матрицы случайными числами в диапазоне [%d;%d]\n", MIN, MAX);
+    printf("Заполнение матрицы случайными числами в диапазоне [%d;%d]\n", min, max);
     for (size_t i = 0; i < rows; i++)
     {
         for (size_t j = 0; j < cols; j++)
         {
-            matrix[i][j] = rand() % (MAX - MIN + 1) + MIN;
+            matrix[i][j] = rand() % (max - min + 1) + min;
         }
     }
 }
 
-void printMatrix(int** matrix, size_t rows, size_t cols)
+void printMatrix(const int* const* matrix, const size_t rows, const size_t cols)
 {
     for (size_t i = 0; i < rows; i++)
     {
@@ -286,23 +280,21 @@ void printMatrix(int** matrix, size_t rows, size_t cols)
     }
 }
 
-void replaceMultiplesOfThree(int** matrix, size_t rows, size_t cols)
+void replaceMultiplesOfThree(int** matrix, const size_t rows, const size_t cols)
 {
     for (size_t j = 0; j < cols; j++)
     {
-        int count = 0;
         for (size_t i = 0; i < rows; i++)
         {
             if (matrix[i][j] % 3 == 0 && matrix[i][j] != 0)
             {
                 matrix[i][j] = 0;
-                count++;
             }
         }
     }
 }
 
-int shouldRemoveRow(int** matrix, size_t rowIndex, size_t cols)
+int shouldRemoveRow(const int* const* matrix, const size_t rowIndex, const size_t cols)
 {
     if (cols < 3)
     {
@@ -315,13 +307,13 @@ int shouldRemoveRow(int** matrix, size_t rowIndex, size_t cols)
     return secondElement > preLastElement;
 }
 
-void removeRows(int** matrix, size_t* rows, size_t cols)
+size_t removeRows(int** matrix, const size_t rows, const size_t cols)
 {
     size_t newRowCount = 0;
 
-    for (size_t i = 0; i < *rows; i++)
+    for (size_t i = 0; i < rows; i++)
     {
-        if (!shouldRemoveRow(matrix, i, cols))
+        if (!shouldRemoveRow((const int* const*)matrix, i, cols))
         {
             if (newRowCount != i)
             {
@@ -334,5 +326,5 @@ void removeRows(int** matrix, size_t* rows, size_t cols)
         }
     }
 
-    *rows = newRowCount;
+    return newRowCount;
 }
