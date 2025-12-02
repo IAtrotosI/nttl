@@ -37,12 +37,21 @@ int main(void)
 {
     setlocale(LC_ALL, "");
 
-    const double A = 0.1;      // Начало интервала
-    const double B = 1.0;      // Конец интервала
-    const double H = 0.1;      // Шаг табулирования
-    const double EPS = 1.0 / pow(15, 4);  // Точность 15^(-4)
-    
-    printf("Интервал: [%.1f, %.1f], шаг: %.1f, точность: %.2e\n", A, B, H, EPS);
+    double A = 0, B = 0, H = 0, EPS = 0;
+
+    printf("Введите начало интервала A: ");
+    scanf("%lf", &A);
+
+    printf("Введите конец интервала B: ");
+    scanf("%lf", &B);
+
+    printf("Введите шаг табулирования H: ");
+    scanf("%lf", &H);
+
+    printf("Введите точность EPS (например, 0.000019): ");
+    scanf("%lf", &EPS);
+
+    printf("\nИнтервал: [%.3f, %.3f], шаг: %.3f, точность: %.2e\n", A, B, H, EPS);
     printf("==============================================================\n\n");
 
     tabulirovat(A, B, H, EPS);
@@ -57,33 +66,29 @@ double vichislit_y(const double x)
 
 double vichislit_ryad(const double x, const double epsilon)
 {
-    const double two_x = 2.0 * x;  // 2x
-    double two_x_power = two_x * two_x;  // (2x)^2
-    double factorial = 2.0;        // 2! для первого члена
-    double sum = 0.0;
+    const double two_x = 2.0 * x;
+    const double two_x_squared = two_x * two_x;
+    double term = -two_x_squared / 2.0;     // Первый член при n=1
+    double sum = term;
+    double denominator = 2.0;               //Текущий знаменатель
     int n = 1;
-    const int MAX_ITERATIONS = 50;
+    const int MAX_ITERATIONS = 100;
 
-    for (int k = 1; k <= MAX_ITERATIONS; k++)
+    if (fabs(term) < epsilon)
+        return sum;
+
+    for (int k = 2; k <= MAX_ITERATIONS; k++)
     {
-        // Вычисляем k-й член ряда: (-1)^k * (2x)^(2k) / (2k)!
-        double term = ((k % 2 == 1) ? -1.0 : 1.0) * two_x_power / factorial;
+        n++;
+
+        term *= (-1.0) * two_x_squared / ((2 * n - 1) * (2 * n));
 
         sum += term;
 
-        // Проверка достижения точности
         if (fabs(term) < epsilon)
         {
             return sum;
         }
-
-        // Подготовка следующего члена ряда
-        two_x_power *= two_x * two_x;
-
-        // Увеличиваем факториал: (2k)! -> (2k+2)!
-        factorial *= (2 * k + 1) * (2 * k + 2);
-
-        n++;
     }
 
     return sum;
@@ -91,14 +96,14 @@ double vichislit_ryad(const double x, const double epsilon)
 
 void tabulirovat(const double start, const double end, const double step, const double epsilon)
 {
-    printf("%-10s %-15s %-15s\n", "x", "y", "Сумма ряда");
-    printf("----------------------------------------\n");
+    printf("%-12s %-18s %-18s\n", "x", "y", "Сумма ряда");
+    printf("------------------------------------------------\n");
 
     for (double x = start; x <= end + DBL_EPSILON; x += step)
     {
         double y = vichislit_y(x);
         double sum_ryada = vichislit_ryad(x, epsilon);
 
-        printf("%-10.4f %-15.8f %-15.8f\n", x, y, sum_ryada);
+        printf("%-12.6f %-18.10f %-18.10f\n", x, y, sum_ryada);
     }
 }
