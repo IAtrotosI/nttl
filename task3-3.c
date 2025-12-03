@@ -30,6 +30,12 @@ double vichislit_ryad(const double x, const double epsilon);
 void tabulirovat(const double start, const double end, const double step, const double epsilon);
 
 /**
+* @brief Функция считывания переменной.
+* @return Возвращает считанное значение.
+*/
+double getValue(void);
+
+/**
 * @brief Точка входа в программу
 * @return Возвращает 0 если программа выполненна верно
 */
@@ -40,16 +46,31 @@ int main(void)
     double A = 0, B = 0, H = 0, EPS = 0;
 
     printf("Введите начало интервала A: ");
-    scanf("%lf", &A);
+    A = getValue();
 
     printf("Введите конец интервала B: ");
-    scanf("%lf", &B);
+    B = getValue();
+    if (A > B)
+    {
+        printf("Ошибка! Конец интервала меньше начала!");
+        return 1;
+    }
 
     printf("Введите шаг табулирования H: ");
-    scanf("%lf", &H);
+    H = getValue();
+    if (H <= 0)
+    {
+        printf("Ошибка! Шаг табулирования должен быть больше нуля!");
+        return 1;
+    }
 
     printf("Введите точность EPS (например, 0.000019): ");
-    scanf("%lf", &EPS);
+    EPS = getValue();
+    if (EPS <= 0)
+    {
+        printf("Ошибка! Точность должна быть больше нуля!!");
+        return 1;
+    }
 
     printf("\nИнтервал: [%.3f, %.3f], шаг: %.3f, точность: %.2e\n", A, B, H, EPS);
     printf("==============================================================\n\n");
@@ -106,4 +127,16 @@ void tabulirovat(const double start, const double end, const double step, const 
 
         printf("%-12.6f %-18.10f %-18.10f\n", x, y, sum_ryada);
     }
+}
+
+double getValue(void)
+{
+    double chislo = 0;
+    if (scanf("%lf", &chislo) != 1)
+    {
+        printf("Ошибка ввода! Требуется вещественное число.\n");
+        exit(1);
+    }
+
+    return chislo;
 }
