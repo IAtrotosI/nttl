@@ -89,27 +89,16 @@ double vichislit_ryad(const double x, const double epsilon)
 {
     const double two_x = 2.0 * x;
     const double two_x_squared = two_x * two_x;
-    double term = -two_x_squared / 2.0;     // Первый член при n=1
+    double term = -two_x_squared / 2.0;
     double sum = term;
-    double denominator = 2.0;               //Текущий знаменатель
     int n = 1;
-    const int MAX_ITERATIONS = 100;
 
-    if (fabs(term) < epsilon)
+    if (fabs(term) <= epsilon)
         return sum;
-
-    for (int k = 2; k <= MAX_ITERATIONS; k++)
+    for (n = 2; fabs(term) > epsilon; n++)
     {
-        n++;
-
         term *= (-1.0) * two_x_squared / ((2 * n - 1) * (2 * n));
-
         sum += term;
-
-        if (fabs(term) < epsilon)
-        {
-            return sum;
-        }
     }
 
     return sum;
