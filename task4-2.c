@@ -272,21 +272,19 @@ void replaceLastNegative(int* arr, const size_t size)
     }
 }
 
-int hasSameDigits(const int num)
-{
+int hasSameDigits(const int num) {
     int absolute_num = abs(num);
-
     if (absolute_num < 10) return 0;
-
     int firstDigit = absolute_num;
-    while (firstDigit >= 10)
-    {
+    int divisor = 1;
+    while (firstDigit >= 10) {
         firstDigit /= 10;
+        divisor *= 10;
     }
 
-    int lastDigit = absolute_num % 10;
+    int secondDigit = (absolute_num / (divisor / 10)) % 10;
 
-    return firstDigit == lastDigit;
+    return (firstDigit == secondDigit);
 }
 
 size_t removeSameDigitElements(int* arr, const size_t size)
